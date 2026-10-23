@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ARNAB_BOT</title>
+<style>
+:root{--green:#39ff88;--bg:#050908;--panel:#0b1510;--muted:#8da99a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#10291b 0%,var(--bg) 58%);color:#e8fff1;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;min-height:100vh}
+header{padding:24px 5%;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1d3a29}
+.brand{font-weight:900;letter-spacing:2px;font-size:clamp(22px,4vw,32px);color:var(--green);text-shadow:0 0 18px #39ff8850}.brand span{color:#eafff2}
+.pill{border:1px solid #24583a;color:var(--green);padding:7px 12px;border-radius:30px;font-size:12px}
+main{width:min(900px,92%);margin:42px auto}.hero{text-align:center;margin-bottom:28px}.hero h1{font-size:clamp(28px,5vw,46px);margin:0 0 10px}.hero h1 em{font-style:normal;color:var(--green)}.hero p{color:var(--muted);margin:0}
+.panel{background:linear-gradient(145deg,#0c1711,#07100b);border:1px solid #1e4a30;border-radius:18px;padding:clamp(20px,4vw,34px);box-shadow:0 0 40px #00ff6610}
+label{display:block;color:#b9d8c4;font-size:13px;margin:0 0 9px}input,select{width:100%;background:#030806;border:1px solid #28543a;border-radius:10px;padding:14px;color:#edfff3;font:inherit;outline:none}input:focus,select:focus{border-color:var(--green);box-shadow:0 0 0 3px #39ff8817}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.actions{display:flex;gap:12px;margin-top:22px}.btn{flex:1;border:1px solid var(--green);background:var(--green);color:#031008;border-radius:10px;padding:14px;font-weight:900;font:inherit;cursor:pointer}.btn.stop{background:transparent;color:var(--green)}.btn:disabled{opacity:.45;cursor:not-allowed}
+.status{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding:16px;background:#030806;border:1px solid #1b3b28;border-radius:10px}.status strong{color:var(--green)}#message{color:var(--muted);font-size:13px;margin-top:15px;min-height:18px}.foot{text-align:center;color:#668373;font-size:12px;margin:22px 0 0}
+@media(max-width:560px){.grid{grid-template-columns:1fr}.actions{flex-direction:column}header{padding:18px 4%}}
+</style>
+</head>
+<body>
+<header><div class="brand">ARNAB_<span>BOT</span></div><div class="pill">● DEMO MODE</div></header>
+<main>
+<section class="hero"><h1>CONTROL <em>PANEL</em></h1><p>Green terminal interface · Demo controls only</p></section>
+<section class="panel">
+<div class="grid">
+<div><label for="uid">TARGET UID</label><input id="uid" placeholder="Enter UID" inputmode="numeric" maxlength="32"></div>
+<div><label for="duration">DURATION</label><select id="duration"><option value="5">5 minutes</option><option value="10" selected>10 minutes</option><option value="15">15 minutes</option><option value="30">30 minutes</option><option value="60">60 minutes</option></select></div>
+</div>
+<div class="actions"><button class="btn" id="start">▶ START DEMO</button><button class="btn stop" id="stop" disabled>■ STOP</button></div>
+<div class="status"><span>STATUS</span><strong id="status">● OFFLINE</strong></div>
+<div id="message" role="status"></div>
+</section>
+<p class="foot">ARNAB_BOT · This demo does not connect to game accounts or send requests.</p>
+</main>
+<script>
+const start=document.querySelector('#start'),stop=document.querySelector('#stop'),statusEl=document.querySelector('#status'),msg=document.querySelector('#message');
+start.addEventListener('click',async()=>{
+ const uid=document.querySelector('#uid').value.trim(),duration=Number(document.querySelector('#duration').value);
+ try{const r=await fetch('/api/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({uid,duration})});const d=await r.json();if(!r.ok)throw Error(d.message);
+ statusEl.textContent='● DEMO RUNNING';start.disabled=true;stop.disabled=false;msg.textContent=d.message;
+ }catch(e){msg.textContent=e.message}
+});
+stop.addEventListener('click',async()=>{const r=await fetch('/api/stop',{method:'POST'});const d=await r.json();statusEl.textContent='● OFFLINE';start.disabled=false;stop.disabled=true;msg.textContent=d.message;});
+</script>
+</body></html>
